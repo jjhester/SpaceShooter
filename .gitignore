@@ -3,6 +3,13 @@
 # =============== #
 Temp/
 Library/
+ProjectSettings/
+
+# =============== #
+# User convention #
+# =============== #
+Build/
+
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
