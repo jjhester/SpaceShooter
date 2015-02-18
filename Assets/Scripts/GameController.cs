@@ -43,7 +43,7 @@ public class GameController : MonoBehaviour {
 	 nextWaveText.text = "";
 	 gameOver = false;
 	 menu.SetActive(false);
-	 UpdateScore();
+	 UpdateScoreDisplay();
 	 StartCoroutine(SpawnWaves());
 
    }
@@ -68,8 +68,11 @@ public class GameController : MonoBehaviour {
 	    for (int i = 0; i < hazardCount * waveCount/2; i++) {
 		  SpawnAsteriod();
 		  yield return new WaitForSeconds(spawnWait);
+		  if (i == 2) { // only after third asteroid
+			nextWaveText.text = "";
+		  } 
 	    }
-	    nextWaveText.text = "";
+	    
 	    if (waveCount > 1) {
 			
 		  for (int i = 0; i < enemyCount * waveCount; i++) {
@@ -87,17 +90,24 @@ public class GameController : MonoBehaviour {
 	 }
    }
    void SpawnEnemy ( float waveSpeed ) {
-	 Vector3 spawnPosition = new Vector3(Random.Range(-spawnValues.x, spawnValues.x), spawnValues.y, spawnValues.z);
+	 Vector3 spawnPosition = GetOpenPosition();
 	 Quaternion spawnRotation = Quaternion.AngleAxis(Random.Range(170, 190), Vector3.down);
 	 GameObject enemy = Instantiate(enemies [Random.Range(0, enemies.Length - 1)], spawnPosition, spawnRotation) as GameObject;
 	 enemy.GetComponent<Mover>().speed = waveSpeed;
    }
    void SpawnAsteriod () {
-	 Vector3 spawnPosition = new Vector3(Random.Range(-spawnValues.x, spawnValues.x), spawnValues.y, spawnValues.z);
+	 Vector3 spawnPosition = GetOpenPosition();
 	 Quaternion spawnRotation = Quaternion.identity;
 	 GameObject asteroid = Instantiate(hazards [Random.Range(0, hazards.Length - 1)], spawnPosition, spawnRotation) as GameObject;
 	 asteroid.GetComponent<Mover>().speed = Random.Range(-waveSpeed * waveCount, -waveSpeed);
    }
+    Vector3 GetOpenPosition() {
+		Vector3 position;
+		do {
+			position = new Vector3(Random.Range(-spawnValues.x, spawnValues.x), spawnValues.y, spawnValues.z);
+		} while (Physics.CheckSphere(position, 2f));
+		return position;
+	}
    void NextWave () {
 		if (waveCount > 0) {
 			audio.Play();
@@ -108,7 +118,7 @@ public class GameController : MonoBehaviour {
    public void AddScore ( int newScoreValue ) {
 	 score += newScoreValue;
 	 if (score > highScore) highScore = score;
-	 UpdateScore();
+	 UpdateScoreDisplay();
    }
 	public void GameOver() {
 		nextWaveText.text = "";
@@ -117,7 +127,7 @@ public class GameController : MonoBehaviour {
 		PlayerPrefs.SetInt("HighScore", highScore);
 		PlayerPrefs.Save();
 	}
-   void UpdateScore () {
+   void UpdateScoreDisplay () {
 	 highText.text = highScore.ToString("0000");
 	 scoreText.text = score.ToString("0000");
    }

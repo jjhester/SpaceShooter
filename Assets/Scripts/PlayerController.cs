@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour {
 
    public float fireRate;
    private float nextFire = 0.0f;
+   private Transform currentPos;
 
    void Update () {
 	 if (Input.GetButton("Fire1") && Time.time > nextFire) {
