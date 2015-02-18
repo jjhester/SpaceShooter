@@ -14,7 +14,7 @@ GameObject:
   - 114: {fileID: 11492084}
   m_Layer: 0
   m_Name: Bolt2
-  m_TagString: Bolt
+  m_TagString: EnemyBolt
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -114,7 +114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61614783765ab994da8a824fceddee62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
+  speed: 25
 --- !u!114 &11492084
 MonoBehaviour:
   m_ObjectHideFlags: 1

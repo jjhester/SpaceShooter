@@ -116,16 +116,16 @@ AudioSource:
   serializedVersion: 3
   m_audioClip: {fileID: 8300000, guid: 1be4472894949437694aead55c6da60f, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: .300000012
   m_Pitch: 1
   Loop: 0
   Mute: 0
   Priority: 128
-  DopplerLevel: 1
+  DopplerLevel: 2.02999997
   MinDistance: 1
   MaxDistance: 500
-  Pan2D: 0
-  rolloffMode: 0
+  Pan2D: 1
+  rolloffMode: 2
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -175,7 +175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61614783765ab994da8a824fceddee62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  speed: -2
 --- !u!114 &11454044
 MonoBehaviour:
   m_ObjectHideFlags: 1

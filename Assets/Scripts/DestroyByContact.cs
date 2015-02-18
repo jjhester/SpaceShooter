@@ -18,7 +18,7 @@ public class DestroyByContact : MonoBehaviour {
    }
   
    void OnTriggerEnter ( Collider other ) {
-    if (other.tag != "Boundary" && other.tag != "Asteroid" && other.tag != "Enemy") {
+    if (other.tag != "Boundary" && other.tag != "Asteroid" && other.tag != "Enemy" && other.tag != "EnemyBolt") {
 	   Debug.Log(this.name + " - " + other.name);
         Instantiate(explosion, transform.position, transform.rotation);
         if (other.tag == "Player") {
