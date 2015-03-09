@@ -17,12 +17,10 @@ public class DestroyByShot : MonoBehaviour {
    }
 	
    void OnTriggerEnter ( Collider other ) {
-
-			if (other.tag == "Player") {
-				Instantiate(playerExplosion, transform.position, transform.rotation);
-				gameController.GameOver();
-			
+		if (other.tag == "Player") {
+			Instantiate(playerExplosion, transform.position, transform.rotation);
 			Destroy(other.gameObject);
+			gameController.GameOver();
 			Destroy(gameObject);
 		} else return;
 	}

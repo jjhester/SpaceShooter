@@ -12,6 +12,7 @@ GameObject:
   - 136: {fileID: 13671932}
   - 114: {fileID: 11471932}
   - 114: {fileID: 11492084}
+  - 114: {fileID: 11406852}
   m_Layer: 0
   m_Name: Bolt2
   m_TagString: EnemyBolt
@@ -103,6 +104,17 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &11406852
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 171932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70b319f00a661f84eb39ffd821932c98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &11471932
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -114,7 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61614783765ab994da8a824fceddee62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 25
+  speed: 20
 --- !u!114 &11492084
 MonoBehaviour:
   m_ObjectHideFlags: 1

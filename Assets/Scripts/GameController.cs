@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using GoogleMobileAds.Api;
 
 public class GameController : MonoBehaviour {
+   public bool showAds;
    public AudioClip[] backgroundMusic;
    public GameObject[] hazards;
    public GameObject[] enemies;
@@ -13,20 +15,30 @@ public class GameController : MonoBehaviour {
    public float startWait;
    public float waveWait;
    public float waveSpeed;
+   
 
    public GUIText scoreText, highText, nextWaveText, musicText;
    public GameObject menu;
    private int score, highScore, waveCount;
    private bool gameOver;
+   private byte[] enemyDistribution;
    private Scroller backgroundScroller;
    private AudioSource backgroundMusicPlayer;
+   private AdController adController;
+
 
    void Start () {
+	 enemyDistribution = new byte[]{0,0,0,1};
 	 if (!PlayerPrefs.HasKey("HighScore")) {
 	    PlayerPrefs.SetInt("HighScore", 800);
 	 }
-	 Debug.Log(PlayerPrefs.GetInt("HighScore"));
+	 //Debug.Log("HighScore: " + PlayerPrefs.GetInt("HighScore"));
 	 highScore = PlayerPrefs.GetInt("HighScore");
+	 if (showAds) {
+	    this.adController = GetComponent<AdController>();
+	    this.adController.RequestBanner();
+	    this.adController.RequestInterstitial();
+	 }
 	 //get backgroundScroller reference
 	 GameObject backgroundScrollerObject = GameObject.FindWithTag("Background");
 	 if (backgroundScrollerObject != null) {
@@ -45,20 +57,55 @@ public class GameController : MonoBehaviour {
 	 menu.SetActive(false);
 	 UpdateScoreDisplay();
 	 StartCoroutine(SpawnWaves());
-
    }
    void Update () {
 	 //Nothing
    }
+   void ShowAdBanner () {
+	 if (this.adController != null) {
+	    adController.ShowBannerAd();
+	 }
+   }
+   void HideAdBanner () {
+	 if (this.adController != null) {
+	    adController.HideBannerAd();
+	 }
+   }
+   void ShowInterstitial () {
+	 if (this.adController != null) {
+	    StartCoroutine(adController.ShowInterstitial(1));
+	 }
+   }
    public void Restart () {
-	 NewBackgroundMusic();
+	 HideAdBanner();
 	 Application.LoadLevel(Application.loadedLevel);
    }
-   public void Quit () {
+//   public void Quit () {
+////	 Application.Quit(); //Not working
+////	 var pt = System.Diagnostics.Process.GetCurrentProcess().Threads;
+////	 foreach (var p in pt) {
+////	    p.Dispose();
+////	 }
+////	 System.Diagnostics.Process.GetCurrentProcess().Kill(); 
+//   }
+////   public void Pause () {
+////	 menu.SetActive(true);
+////	 ShowInterstitial();
+////   }
+////   public void Unpause () {
+////	 menu.SetActive(false);
+////   }
+   public void QuitGame () {
+	 //Debug.Log("Quitting game...");
 	 Application.Quit();
    }
+  
    void NewBackgroundMusic () {
-	 backgroundMusicPlayer.clip = backgroundMusic [Random.Range(0, backgroundMusic.Length - 1)];
+	 AudioClip bgMusic = backgroundMusic [Random.Range(0, backgroundMusic.Length)];
+	 if (bgMusic == null) {
+	    bgMusic = backgroundMusic [1];
+	 } //default
+	 backgroundMusicPlayer.clip = bgMusic;
 	 musicText.text = backgroundMusicPlayer.clip.name + " by Durvin";
    }
    IEnumerator SpawnWaves () {
@@ -74,9 +121,8 @@ public class GameController : MonoBehaviour {
 	    }
 	    
 	    if (waveCount > 1) {
-			
-		  for (int i = 0; i < enemyCount * waveCount; i++) {
-			SpawnEnemy(Random.Range(10, waveCount * 5));
+		  for (int i = 0; i < enemyCount * (waveCount - 1); i++) {
+			SpawnEnemy();
 			yield return new WaitForSeconds(spawnWait);
 		  }
 	    }
@@ -86,41 +132,46 @@ public class GameController : MonoBehaviour {
 		  yield return new WaitForSeconds(spawnWait);
 	    }
 	    yield return new WaitForSeconds(waveWait);
-	    
 	 }
    }
-   void SpawnEnemy ( float waveSpeed ) {
+   void SpawnEnemy () {
 	 Vector3 spawnPosition = GetOpenPosition();
-	 Quaternion spawnRotation = Quaternion.AngleAxis(Random.Range(170, 190), Vector3.down);
-	 GameObject enemy = Instantiate(enemies [Random.Range(0, enemies.Length - 1)], spawnPosition, spawnRotation) as GameObject;
-	 enemy.GetComponent<Mover>().speed = waveSpeed;
+	 Quaternion spawnRotation = Quaternion.Euler(0.0f, 180, 0.0f);
+	 GameObject enemy = Instantiate(enemies [enemyDistribution [Random.Range(0, 4)]], spawnPosition, spawnRotation) as GameObject;
+	 enemy.GetComponent<EnemyController>().speedFactor = Random.Range(waveSpeed + 1, waveSpeed * waveCount + 1);
    }
    void SpawnAsteriod () {
 	 Vector3 spawnPosition = GetOpenPosition();
 	 Quaternion spawnRotation = Quaternion.identity;
-	 GameObject asteroid = Instantiate(hazards [Random.Range(0, hazards.Length - 1)], spawnPosition, spawnRotation) as GameObject;
+	 GameObject asteroid = Instantiate(hazards [Random.Range(0, hazards.Length)], spawnPosition, spawnRotation) as GameObject;
 	 asteroid.GetComponent<Mover>().speed = Random.Range(-waveSpeed * waveCount, -waveSpeed);
    }
-    Vector3 GetOpenPosition() {
-		Vector3 position;
-		do {
-			position = new Vector3(Random.Range(-spawnValues.x, spawnValues.x), spawnValues.y, spawnValues.z);
-		} while (Physics.CheckSphere(position, 2f));
-		return position;
-	}
+   Vector3 GetOpenPosition () {
+	 Vector3 position;
+	 do {
+	    position = new Vector3(Random.Range(-spawnValues.x, spawnValues.x), spawnValues.y, spawnValues.z);
+	 } while (Physics.CheckSphere(position, 2f));
+	 return position;
+   }
    void NextWave () {
-		if (waveCount > 0) {
-			audio.Play();
-		}
+	 if (waveCount > 0) {
+	    HideAdBanner();
+	    GetComponent<AudioSource>().Play();
+	 }
 	 waveCount++;
 	 nextWaveText.text = "Wave " + waveCount;
+	 
    }
    public void AddScore ( int newScoreValue ) {
-	 score += newScoreValue;
-	 if (score > highScore) highScore = score;
-	 UpdateScoreDisplay();
+	if (!gameOver) {
+		 score += newScoreValue;
+		 if (score > highScore) highScore = score;
+		 	UpdateScoreDisplay();
+	}
    }
 	public void GameOver() {
+		ShowAdBanner();
+		ShowInterstitial();
 		nextWaveText.text = "";
 		gameOver = true;
 		menu.SetActive(true);

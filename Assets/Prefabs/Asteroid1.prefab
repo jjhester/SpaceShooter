@@ -141,7 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 100add3115ef4614c8caac26d0112a08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tumble: 5
+  tumble: 4
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1
